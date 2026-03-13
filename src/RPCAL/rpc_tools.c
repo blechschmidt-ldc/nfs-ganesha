@@ -211,16 +211,17 @@ static inline bool xdr_io_data_encode(XDR *xdrs, io_data *objp)
 	if (size != size2) {
 		/* grab the last N bytes of last buffer into extra */
 		size_t n = size % BYTES_PER_XDR_UNIT;
+		size_t pad = size2 - size;
 
-		/* Check if last buffer has space */
+		/* Check if last buffer has space for padding */
 		if (objp->last_iov_buf_size >=
-		    (uio->uio_vio[last].vio_length + n)) {
+		    (uio->uio_vio[last].vio_length + pad)) {
 			uio->uio_vio[last].vio_tail =
-				uio->uio_vio[last].vio_tail + n;
+				uio->uio_vio[last].vio_tail + pad;
 			uio->uio_vio[last].vio_wrap =
-				uio->uio_vio[last].vio_wrap + n;
+				uio->uio_vio[last].vio_wrap + pad;
 			uio->uio_vio[last].vio_length =
-				uio->uio_vio[last].vio_length + n;
+				uio->uio_vio[last].vio_length + pad;
 			uio->uio_count--;
 			goto putbufs;
 		}
